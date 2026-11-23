@@ -34,6 +34,8 @@ for slug,name,mbid in ARTISTS:
     normalize.sort(key=lambda o:(o['date'] if o['date'] else '9999',o['type'],o['title']))
     allart.append({'slug':slug,'name':name,'mbid':mbid,'catalog':normalize,'count':len(normalize)})
     print(name,len(normalize), 'type_counts',{t:sum(1 for r in normalize if r['type']==t) for t in ['Album','Single','EP','Other']})
-p=Path('/mnt/files/totp1977/discographies.json')
+root=Path(__file__).resolve().parents[1]
+p=(root/'data'/'discographies.json') if (root/'data').exists() else Path('/mnt/files/totp1977/discographies.json')
+p.parent.mkdir(parents=True,exist_ok=True)
 p.write_text(json.dumps(allart,ensure_ascii=False,separators=(',',':')),encoding='utf-8')
 print('written',p.stat().st_size)

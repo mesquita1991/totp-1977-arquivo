@@ -1,9 +1,12 @@
 from pathlib import Path
-P=Path('/mnt/files/totp1977')
+P=Path(__file__).resolve().parents[1] if (Path(__file__).resolve().parents[1]/'data').exists() else Path('/mnt/files/totp1977')
+def resource(name):
+    sub= ('src/' if name in ('styles.css','app.js') else 'data/')+name
+    return (P/sub if (P/sub).exists() else P/name)
 def inline_json(name):
-    return (P/name).read_text(encoding='utf8').replace('</','<\\/')
-css=(P/'styles.css').read_text(encoding='utf8')
-js=(P/'app.js').read_text(encoding='utf8')
+    return resource(name).read_text(encoding='utf8').replace('</','<\\/')
+css=resource('styles.css').read_text(encoding='utf8')
+js=resource('app.js').read_text(encoding='utf8')
 html_code='''<!doctype html>
 <html lang="pt-BR">
 <head>

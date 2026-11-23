@@ -11,7 +11,7 @@ def one(i):
             s=BeautifulSoup(r.text,'html.parser')
             h=s.select_one('h1#page-header')
             if not h:return None
-            date=h.get_text(strip=True)
+            date={726:'25/12/1977',727:'26/12/1977'}.get(i,h.get_text(strip=True))
             if not re.fullmatch(r'\d{2}/\d{2}/1977',date):return None
             rows=[]
             t=s.select_one('table.table-hover')
@@ -32,7 +32,7 @@ def one(i):
                 vids=[a.get('href','') for a in cells[-2].select('a[href]')] if len(cells)>4 else []
                 rows.append({'title':title,'artist':artist,'kind':typ,'chart':chart,'video':next((v for v in vids if 'youtube' in v or 'youtu.be' in v),'')})
             desc=s.select_one('meta[name="description"]')
-            return {'id':i,'date':date,'songs':rows,'url':BASE+str(i),'description':desc.get('content','') if desc else ''}
+            return {'id':i,'date':date,'special':i in (726,727),'songs':rows,'url':BASE+str(i),'description':desc.get('content','') if desc else ''}
         except Exception as e:
             err=str(e)
             time.sleep(1)
@@ -42,7 +42,9 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
     results=list(pool.map(one,ids))
 episodes=[r for r in results if r and r.get('date')]
 episodes.sort(key=lambda x:datetime.datetime.strptime(x['date'],'%d/%m/%Y'))
-p=Path('/mnt/files/totp1977/episodes.json')
+root=Path(__file__).resolve().parents[1]
+p=(root/'data'/'episodes.json') if (root/'data').exists() else Path('/mnt/files/totp1977/episodes.json')
+p.parent.mkdir(parents=True,exist_ok=True)
 p.write_text(json.dumps(episodes,ensure_ascii=False,separators=(',',':')),encoding='utf-8')
 print('episodes',len(episodes),'songs',sum(len(e['songs']) for e in episodes),'dates',[e['date'] for e in episodes[:2]+episodes[-3:]])
 print('errors',[e for e in results if e and e.get('error')])

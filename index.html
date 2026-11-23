@@ -222,7 +222,7 @@ function renderEpisodes(){
  if(!relevant.length)return body+showEmpty();
  let last=0;
  for(const ep of relevant){
-   const m=monthOf(ep.date);if(m!==last){if(last)body+='</div>';body+='<section class="month"><div class="month-title">'+M[m-1]+' 1977</div>';last=m;}
+   const m=monthOf(ep.date);if(m!==last){if(last)body+='</section>';body+='<section class="month"><div class="month-title">'+M[m-1]+' 1977</div>';last=m;}
    const present=(ep.description||'').match(/Introduced by ([^.]+)\./i);const host=ep.special?(ep.id===726?'Noel Edmonds e David Jensen':'Tony Blackburn e Dave Lee Travis'):(present?present[1]:'');
    body+='<details class="ep" data-ep="'+ep.id+'"><summary><div class="ep-date"><span class="day">'+esc(ep.date.slice(0,2))+'</span><small class="sep">/</small>'+esc(ep.date.slice(3,5))+'</div>'+
    '<div class="ep-info"><strong>'+(ep.special?'Especial de Natal':'Edição nº '+ep.id)+'</strong><p>'+esc(host||'Top of the Pops')+'</p></div>'+
@@ -368,7 +368,7 @@ document.addEventListener('click',ev=>{
  if(!btn)return;
  if(btn.matches('a'))ev.preventDefault();
  if(btn.dataset.nav){S.profile='';changeView(btn.dataset.nav);return;}
- if(btn.dataset.profile){changeView('artists',{profile:btn.dataset.profile});return;}
+ if(btn.dataset.profile){const id=btn.dataset.profile;changeView('artists',{profile:id});setTimeout(()=>{const node=document.getElementById('profile-'+id);if(node)node.scrollIntoView({behavior:'smooth',block:'start'});},80);return;}
  if(btn.dataset.disc){S.discType='studio';changeView('discs',{discArtist:btn.dataset.disc,clear:true});return;}
  if(btn.dataset.type){S.discType=btn.dataset.type;S.discLimit=36;render();return;}
  if(btn.dataset.more){if(btn.dataset.more==='songs')S.displayLimit+=80;else S.discLimit+=36;render();return;}
